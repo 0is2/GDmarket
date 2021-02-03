@@ -482,7 +482,7 @@ Reservation(요청처리 쓰레드)에서 처리시간이 610 밀리가 초과�
 
 ![KakaoTalk_20210203_132348649](https://user-images.githubusercontent.com/5582138/106698167-9daa3c00-6623-11eb-84ed-6ece9f9afac6.png)
 ```
-//Reservation 서비스 > application.yml 
+// Reservation 서비스 > application.yml 
 
   feign:
     hystrix:
@@ -494,13 +494,13 @@ Reservation(요청처리 쓰레드)에서 처리시간이 610 밀리가 초과�
         execution.isolation.thread.timeoutInMilliseconds: 610
 ```
 
-피호출되는 Payment-Request / Payment-approve 의 부하 처리 - 400 밀리에서 랜덤으로 220 밀리 조정
+피호출되는 Payment-Request / Payment-approve 의 부하 처리 - 400 밀리초 + 랜덤으로 220 밀리초 추가되도록 sleep 조정
 
 ![KakaoTalk_20210203_132118623](https://user-images.githubusercontent.com/5582138/106698322-ee219980-6623-11eb-8d58-f1ef6de78606.png)
 
 
 ```java
-//Payment 서비스 > Payment.java
+// Payment 서비스 > Payment.java
 
 	if ("Paid".equals(paymentStatus) ) {
             System.out.println("=============결제 승인 처리중=============");
@@ -528,7 +528,7 @@ Reservation(요청처리 쓰레드)에서 처리시간이 610 밀리가 초과�
 
 
 ```
-      siege -c10 -t30S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations/1 PATCH {"paymentStatus":"Paid"}'
+siege -c10 -t30S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations/1 PATCH {"paymentStatus":"Paid"}'
 ```
 
 ![KakaoTalk_20210203_130452776](https://user-images.githubusercontent.com/5582138/106697123-810d0480-6621-11eb-9792-e0eb79b1182c.png)
