@@ -547,9 +547,10 @@ siege -c10 -t30S -r10 -v --content-type "application/json" 'http://reservation:8
 대리점 시스템에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica 를 10개까지 늘려준다:
 # autocale out 설정
 store > deployment.yml 설정
-![KakaoTalk_20210203_155639143](https://user-images.githubusercontent.com/5582138/106710240-fa642180-6638-11eb-94b4-33154c8b0fb5.png)
 
-kubectl autoscale deploy store --min=1 --max=10 --cpu-percent=15 e
+'''' 
+        kubectl autoscale deploy store --min=1 --max=10 --cpu-percent=15 e
+''''
 
 CirCuit Breaker와 동일한 방법으로 워크로드를 50초 걸어준다.
 
@@ -558,6 +559,9 @@ CirCuit Breaker와 동일한 방법으로 워크로드를 50초 걸어준다.
 	
 	siege -c250 -t50S -r1000 -v --content-type "application/json" 'http://reservation:8080/reservations POST { "reservationNo":1, "paymentStatus":"Paid"}'
 ''''
+
+![KakaoTalk_20210203_155639143](https://user-images.githubusercontent.com/5582138/106710240-fa642180-6638-11eb-94b4-33154c8b0fb5.png)
+
 
 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다:
 
