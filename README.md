@@ -548,6 +548,8 @@ siege -c10 -t30S -r10 -v --content-type "application/json" 'http://reservation:8
 # autocale out 설정
 store > deployment.yml 설정
 
+![KakaoTalk_20210203_160715126](https://user-images.githubusercontent.com/5582138/106710896-07354500-663a-11eb-9abe-3c3177fd7951.png)
+
 '''' 
         kubectl autoscale deploy store --min=1 --max=10 --cpu-percent=15 e
 ''''
