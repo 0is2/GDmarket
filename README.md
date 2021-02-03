@@ -648,29 +648,32 @@ http POST http://app:8080/orders item=dfdf2 qty=22
 
 ## Self-healing (Liveness Probe)
 
-- store 서비스 정상 확인
+- Liveness Command probe 설정
+~~~
+nano exec-liveness.yaml
+~~~
+![commandProbe01](https://user-images.githubusercontent.com/20763542/106622135-a153a980-65b6-11eb-83da-67ba79da9304.jpg)
 
-![image](https://user-images.githubusercontent.com/27958588/98096336-fb1cd880-1ece-11eb-9b99-3d704cd55fd2.jpg)
+- /tmp/healthy 파일이 존재하는지 확인하는 설정파일. 5초마다 해당 파일이 있는지 조회, Kubelet이 첫 체크하기 전에 기다리는 시간을 설정한다.
+
+![commandProbe02](https://user-images.githubusercontent.com/20763542/106618921-60a66100-65b3-11eb-8b22-04003d3d86ae.jpg)
 
 
-- deployment.yml 에 Liveness Probe 옵션 추가
-```
-cd ~/phone82/store/kubernetes
-vi deployment.yml
+- 파일 설정으로 배포
+~~~
+kubectl create –f exec-liveness.yaml
+~~~
+![commandProbe03](https://user-images.githubusercontent.com/20763542/106618914-5edc9d80-65b3-11eb-9089-2b2ecc9934ba.jpg)
 
-(아래 설정 변경)
-livenessProbe:
-	tcpSocket:
-	  port: 8081
-	initialDelaySeconds: 5
-	periodSeconds: 5
-```
-![image](https://user-images.githubusercontent.com/27958588/98096375-0839c780-1ecf-11eb-85fb-00e8252aa84a.jpg)
+- 결과 확인
+~~~
+kubectl describe pod liveness-exec
+~~~
+![commandProbe04](https://user-images.githubusercontent.com/20763542/106618916-5f753400-65b3-11eb-9d0a-30ccb363e5aa.jpg)
 
-- store pod에 liveness가 적용된 부분 확인
-
-![image](https://user-images.githubusercontent.com/27958588/98096393-0a9c2180-1ecf-11eb-8ac5-f6048160961d.jpg)
-
-- store 서비스의 liveness가 발동되어 13번 retry 시도 한 부분 확인
-
-![image](https://user-images.githubusercontent.com/27958588/98096461-20a9e200-1ecf-11eb-8b02-364162baa355.jpg)
+- 파일이 존재하지 않을 경우, 정상 작동에 문제가 있다고 판단되어
+kublet에 의해 자동으로 컨테이너가 재시작 된다.
+~~~
+kubectl get pod liveness-exec -o wide
+~~~
+![commandProbe05](https://user-images.githubusercontent.com/20763542/106618918-600dca80-65b3-11eb-9868-a71500c4afc6.jpg)
