@@ -41,7 +41,7 @@ public class Payment {
             paymentCompleted.publishAfterCommit();
 
             try {
-                Thread.currentThread().sleep((long) (1000 + Math.random() * 220));
+                Thread.currentThread().sleep((long) (400 + Math.random() * 220));
                 System.out.println("=============결제 승인 완료=============");
             } catch (InterruptedException e) {
                 e.printStackTrace();
