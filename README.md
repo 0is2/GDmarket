@@ -221,7 +221,7 @@ gateway > applitcation.yml 설정
 gateway 테스트
 
 ```
-http POST http://gateway:8080/items itemName=Camera itemPrice=100 itemStatus=Rentable rentalStatus=NotRenting
+http http://gateway:8080/reservations
 ```
 ![gateway](https://user-images.githubusercontent.com/26623768/106683440-dc31fd80-6607-11eb-95ea-f928dcd08e4a.PNG)
 
