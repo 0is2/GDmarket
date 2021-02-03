@@ -550,17 +550,17 @@ store > deployment.yml 설정
 
 ![KakaoTalk_20210203_160715126](https://user-images.githubusercontent.com/5582138/106710896-07354500-663a-11eb-9abe-3c3177fd7951.png)
 
-'''' 
+````
         kubectl autoscale deploy store --min=1 --max=10 --cpu-percent=15 e
-''''
+```` 
 
 CirCuit Breaker와 동일한 방법으로 워크로드를 50초 걸어준다.
 
-''''
+````
         kubectl exec -it pod/siege-5c7c46b788-4rn4r -c siege -- /bin/bash
 	
 	siege -c250 -t50S -r1000 -v --content-type "application/json" 'http://reservation:8080/reservations POST { "reservationNo":1, "paymentStatus":"Paid"}'
-''''
+```` 
 
 ![KakaoTalk_20210203_155639143](https://user-images.githubusercontent.com/5582138/106710240-fa642180-6638-11eb-94b4-33154c8b0fb5.png)
 
