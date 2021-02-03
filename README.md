@@ -479,7 +479,6 @@ Releases
 ![deployment수정](https://user-images.githubusercontent.com/26623768/106570535-5a938e80-6579-11eb-97db-638ec9440502.png)
 - deployment.yml로 서비스 배포
 ```
-cd app
 kubectl apply -f kubernetes/deployment.yml
 ```
 
