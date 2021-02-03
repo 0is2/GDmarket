@@ -223,7 +223,7 @@ gateway 테스트
 ```
 http POST http://gateway:8080/items itemName=Camera itemPrice=100 itemStatus=Rentable rentalStatus=NotRenting
 ```
-![image](https://user-images.githubusercontent.com/73699193/98183284-2d6c1b80-1f4b-11eb-90ad-c95c4df1f36a.png)
+![gateway](https://user-images.githubusercontent.com/26623768/106683440-dc31fd80-6607-11eb-95ea-f928dcd08e4a.PNG)
 
 
 
