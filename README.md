@@ -542,6 +542,33 @@ siege -c10 -t30S -r10 -v --content-type "application/json" 'http://reservation:8
 * 적정 부하량 산출시 black-box Testing 에 의존
 
 
+
+오토스케일 아웃
+대리점 시스템에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica 를 10개까지 늘려준다:
+# autocale out 설정
+store > deployment.yml 설정
+image
+
+kubectl autoscale deploy store --min=1 --max=10 --cpu-percent=15 -n phone82
+image
+
+CB 에서 했던 방식대로 워크로드를 2분 동안 걸어준다.
+kubectl exec -it pod/siege-5c7c46b788-4rn4r -c siege -n phone82 -- /bin/bash
+siege -c100 -t120S -r10 -v --content-type "application/json" 'http://store:8080/storeManages POST {"orderId":"456", "process":"Payed"}'
+image
+
+오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다:
+kubectl get deploy store -w -n phone82
+어느정도 시간이 흐른 후 스케일 아웃이 벌어지는 것을 확인할 수 있다. max=10
+부하를 줄이니 늘어난 스케일이 점점 줄어들었다.
+image
+
+다시 부하를 주고 확인하니 Availability가 높아진 것을 확인 할 수 있었다.
+image
+
+
+
+
 ## 무정지 재배포
 
 * 첫째 무정지 재배포가 100% 되는 것인지 확인하기 위해서 Autoscale 이나 CB 설정을 제거함
