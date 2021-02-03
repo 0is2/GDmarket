@@ -107,7 +107,7 @@ GDmarket : 근대마켓 - 근거리 대여 마켓
 ![image](./img/bounded.GIF)
 
     - 도메인 서열 분리 
-        - Core Domain:  item, reservation : 없어서는 안될 핵심 서비스이며, 연견 Up-time SLA 수준을 99.999% 목표, 배포주기는 app 의 경우 1주일 1회 미만, store 의 경우 1개월 1회 미만
+        - Core Domain:  item, reservation : 없어서는 안될 핵심 서비스이며, 연견 Up-time SLA 수준을 99.999% 목표, 배포주기는 item, reservation 의 경우 1주일 1회 미만
         - Supporting Domain: -- : 경쟁력을 내기위한 서비스이며, SLA 수준은 연간 60% 이상 uptime 목표, 배포주기는 각 팀의 자율이나 표준 스프린트 주기가 1주일 이므로 1주일 1회 이상을 기준으로 함.
         - General Domain:  pay : 결제서비스로 3rd Party 외부 서비스를 사용하는 것이 경쟁력이 높음 
 
@@ -183,7 +183,7 @@ mvn spring-boot:run
 cd reservation
 mvn spring-boot:run 
 
-cd pay
+cd payment
 mvn spring-boot:run  
 ```
 
@@ -425,7 +425,7 @@ git clone https://github.com/0is2/GDmarket.git
 
 - 빌드하기
 ```
-cd app
+cd item
 mvn package -Dmaven.test.skip=true
 ```
 ![캡처5 mvn package](https://user-images.githubusercontent.com/26623768/106570018-b14c9880-6578-11eb-8199-892c8653c621.PNG)
@@ -555,18 +555,21 @@ siege -c10 -t30S -r10 -v --content-type "application/json" 'http://reservation:8
 
 
 
-오토스케일 아웃
-대리점 시스템에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica 를 10개까지 늘려준다:
-# autocale out 설정
-store > deployment.yml 설정
+
+## 오토스케일 아웃
+reservation 시스템에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 
+설정은 CPU 사용량이 15프로를 넘어서면 replica 를 10개까지 늘려준다:
+
+* reservation > deployment.yml 설정
 
 ![KakaoTalk_20210203_160715126](https://user-images.githubusercontent.com/5582138/106710896-07354500-663a-11eb-9abe-3c3177fd7951.png)
 
 ````
-        kubectl autoscale deploy store --min=1 --max=10 --cpu-percent=15 e
+        kubectl autoscale deploy reservation --min=1 --max=10 --cpu-percent=15
 ```` 
 
-CirCuit Breaker와 동일한 방법으로 워크로드를 50초 걸어준다.
+
+* CirCuit Breaker와 동일한 방법으로 워크로드를 50초 걸어준다.
 
 ````
         kubectl exec -it pod/siege-5c7c46b788-4rn4r -c siege -- /bin/bash
@@ -577,9 +580,11 @@ CirCuit Breaker와 동일한 방법으로 워크로드를 50초 걸어준다.
 ![KakaoTalk_20210203_155639143](https://user-images.githubusercontent.com/5582138/106710240-fa642180-6638-11eb-94b4-33154c8b0fb5.png)
 
 
-오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다:
+* 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다:
 
-kubectl get deploy store -w
+````
+kubectl get deploy reservation -w
+````
 
 ![KakaoTalk_20210203_155715383](https://user-images.githubusercontent.com/5582138/106710245-fb954e80-6638-11eb-845b-92925a9fc9cf.png)
 
@@ -626,7 +631,7 @@ kubectl set image deploy item item=skcc10.azurecr.io/item:0.2
 
 ![image](https://user-images.githubusercontent.com/77088104/106608169-69913580-65a7-11eb-9514-1c8c137d29fc.png)
 
-- 기존 버전과 새 버전의 store pod 공존 중
+- 기존 버전과 새 버전의 item pod 공존 중
 
 ![image](https://user-images.githubusercontent.com/77088104/106607775-08696200-65a7-11eb-9f90-3b4aade9ee85.png)
 
@@ -635,50 +640,27 @@ kubectl set image deploy item item=skcc10.azurecr.io/item:0.2
 
 ## Config Map
 
-- apllication.yml 설정
+- application.yml 설정
 
 * default쪽
 
-![image](https://user-images.githubusercontent.com/73699193/98108335-1c85c080-1edf-11eb-9d0f-1f69e592bb1d.png)
+![image](./img/config1.png)
 
 * docker 쪽
 
-![image](https://user-images.githubusercontent.com/73699193/98108645-ad5c9c00-1edf-11eb-8d54-487d2262e8af.png)
+![image](./img/config2.png)
 
 - Deployment.yml 설정
 
-![image](https://user-images.githubusercontent.com/73699193/98108902-12b08d00-1ee0-11eb-8f8a-3a3ea82a635c.png)
+![image](./img/config3.png)
 
 - config map 생성 후 조회
 ```
-kubectl create configmap apiurl --from-literal=url=http://pay:8080 --from-literal=fluentd-server-ip=10.xxx.xxx.xxx -n phone82
-```
-![image](https://user-images.githubusercontent.com/73699193/98107784-5bffdd00-1ede-11eb-8da6-82dbead0d64f.png)
-
-- 설정한 url로 주문 호출
-```
-http POST http://app:8080/orders item=dfdf1 qty=21
+kubectl create configmap apiurl --from-literal=url=http://payment:8080
+kubectl get configmap apiurl -o yaml
 ```
 
-![image](https://user-images.githubusercontent.com/73699193/98109319-b732cf00-1ee0-11eb-9e92-ad0e26e398ec.png)
-
-- configmap 삭제 후 app 서비스 재시작
-```
-kubectl delete configmap apiurl -n phone82
-kubectl get pod/app-56f677d458-5gqf2 -n phone82 -o yaml | kubectl replace --force -f-
-```
-![image](https://user-images.githubusercontent.com/73699193/98110005-cf571e00-1ee1-11eb-973f-2f4922f8833c.png)
-
-- configmap 삭제된 상태에서 주문 호출
-```
-http POST http://app:8080/orders item=dfdf2 qty=22
-```
-![image](https://user-images.githubusercontent.com/73699193/98110323-42f92b00-1ee2-11eb-90f3-fe8044085e9d.png)
-
-![image](https://user-images.githubusercontent.com/73699193/98110445-720f9c80-1ee2-11eb-851e-adcd1f2f7851.png)
-
-![image](https://user-images.githubusercontent.com/73699193/98110782-f4985c00-1ee2-11eb-97a7-1fed3c6b042c.png)
-
+![image](./img/config4.png)
 
 
 ## Self-healing (Liveness Probe)
