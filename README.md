@@ -4,23 +4,28 @@ GDmarket : 근대마켓 - 근거리 대여 마켓
 ![image](./img/logo.jpg)
 
 # Table of contents
-
 - 근대마켓
    - [서비스 시나리오](#서비스-시나리오)
    - [체크포인트](#체크포인트)
    - [분석/설계](#분석설계)
-   - [구현:](#구현-)
+         - [AS-IS 조직 (Horizontally-Aligned)](#AS-IS-조직-Horizontally-Aligned)
+		 - [TO-BE 조직 (Vertically-Aligned)](#TO-BE-조직-Vertically-Aligned)
+		 - [Event Storming 결과](#Event-Storming-결과)
+		 - [헥사고날 아키텍처 다이어그램 도출 (Polyglot)](#헥사고날-아키텍처-다이어그램-도출-Polyglot)
+   - [구현](#구현)
       - [DDD 의 적용](#ddd-의-적용)
       - [폴리글랏 퍼시스턴스](#폴리글랏-퍼시스턴스)
-      - [폴리글랏 프로그래밍](#폴리글랏-프로그래밍)
-      - [동기식 호출 과 Fallback 처리](#동기식-호출-과-Fallback-처리)
-      - [비동기식 호출 과 Eventual Consistency](#비동기식-호출-과-Eventual-Consistency)
+      - [Gateway 적용](#Gateway-적용)
+      - [동기식 호출과 Fallback 처리](#동기식-호출과-Fallback-처리)
+      - [비동기식 호출 / 시간적 디커플링 / 장애격리](#비동기식-호출--시간적-디커플링--장애격리)
+      - [CQRS 포함 시나리오 구현 검증](#CQRS-포함-시나리오-구현-검증)
    - [운영](#운영)
-      - [CI/CD 설정](#cicd설정)
-      - [동기식 호출 / 서킷 브레이킹 / 장애격리](#동기식-호출-서킷-브레이킹-장애격리)
+	  - [Deploy / Pipeline](Deploy--Pipeline)
+      - [동기식 호출 / 서킷 브레이킹 / 장애격리](#동기식-호출--서킷-브레이킹--장애격리)
       - [오토스케일 아웃](#오토스케일-아웃)
       - [무정지 재배포](#무정지-재배포)
-   - [신규 개발 조직의 추가](#신규-개발-조직의-추가)
+      - [Config Map](#Config-Map)
+      - [Self-healing (Liveness Probe)](#Self-healing-Liveness-Probe)
 
 
 # 서비스 시나리오
@@ -222,7 +227,7 @@ http POST http://gateway:8080/items itemName=Camera itemPrice=100 itemStatus=Ren
 
 
 
-## 동기식 호출 과 Fallback 처리
+## 동기식 호출과 Fallback 처리
 
 설계에서, 아래의 두 가지 호출은 동기식 호출을 이용하여 일관성을 유지도록 하였다. 
 
@@ -339,7 +344,7 @@ http localhost:8081/items/1
 ![image](./img/예약완료.PNG)
 
 
-## 시나리오 구현 검증
+## CQRS 포함 시나리오 구현 검증
 ```
 # items 등록
 http POST localhost:8081/items/ itemName=Camera itemPrice=100 itemStatus=Rentable rentalStatus=NotRenting
