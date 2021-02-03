@@ -454,6 +454,18 @@ kubectl expose deploy item --type="ClusterIP" --port=8080 -n gdmarket
 
 
 
+#pipe line 
+
+Pipelines
+![image](https://user-images.githubusercontent.com/5582138/106711434-d9043500-663a-11eb-8b67-dcd86384feac.png)
+
+Releases
+![image](https://user-images.githubusercontent.com/5582138/106711305-afe3a480-663a-11eb-8566-b6e53c126f62.png)
+
+
+
+
+
 -(별첨)deployment.yml을 사용하여 배포
 
 - deployment.yml 편집
